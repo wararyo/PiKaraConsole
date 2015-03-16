@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">PiKaraConsole</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="drawer_home">Home</string>
+    <string name="drawer_song">Songs</string>
+    <string name="drawer_search">Search by Keyword</string>
+    <string name="drawer_artist">Artist</string>
+    <string name="drawer_new">Newly Added</string>
+    <string name="drawer_genre">Genre</string>
+    <string name="drawer_history">History</string>
+    <string name="drawer_other">Other</string>
+    <string name="drawer_setting_pikara">PiKara Setting</string>
+    <string name="drawer_setting_application">Application Setting</string>
+    <string name="drawer_info">Infomation</string>
+
+    <string name="caution_no_connection">No connection\nPress "Make connection" to search your PiKara.</string>
+    <string name="button_make_connection">Make connection</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
