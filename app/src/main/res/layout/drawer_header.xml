@@ -11,8 +11,8 @@
         android:layout_height="144dp"
         android:id="@+id/drawer_header_image"
         android:layout_gravity="center"
-        android:src="@color/material_drawer_primary"
-        android:scaleType="fitCenter" />
+        android:src="@mipmap/header_sample"
+        android:scaleType="centerCrop" />
 
     <ImageView
         android:layout_width="wrap_content"

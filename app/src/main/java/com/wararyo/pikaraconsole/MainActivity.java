@@ -1,5 +1,6 @@
 package com.wararyo.pikaraconsole;
 
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -23,18 +25,32 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.util.EventListener;
+import java.util.Hashtable;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements HomeFragment.OnFragmentInteractionListener {
 
     Toolbar toolbar;
     Drawer drawer;
     Drawer.Result drawerResult;
     View viewDrawerHeaderRoof;
     ImageView ivDrawerHeader;
+
+    boolean isConnected = true;
+
+    //Hashtable<int fragmentID,(Object)fragment>
+    //fragmentID equals itemID in Listview in NavigationDrawer
+    Hashtable fragmentHashtable;
+    int currentFragmentID = 0;
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 
     private OnMyDrawerListenerInterface drawerlistener = null;
 
@@ -60,6 +76,9 @@ public class MainActivity extends ActionBarActivity {
         //getSupportActionBar().setHomeButtonEnabled(false);
         //toolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
+        fragmentHashtable = new Hashtable();
+        fragmentHashtable.put(1,new MainFragment());
+
 
         this.drawerlistener = emptylistener;
         drawer = new Drawer().withActivity(this)
@@ -73,15 +92,15 @@ public class MainActivity extends ActionBarActivity {
                 .withHeaderDivider(true)
                 .addDrawerItems(
                         //new PrimaryDrawerItem().setEnabled(false),
-                        new PrimaryDrawerItem().withName(R.string.drawer_home).withIcon(FontAwesome.Icon.faw_home),
+                        new PrimaryDrawerItem().withName(R.string.drawer_home).withIcon(FontAwesome.Icon.faw_home).setEnabled(isConnected),
                         new SectionDrawerItem().withName(R.string.drawer_song),
-                        new SecondaryDrawerItem().withName(R.string.drawer_search).withIcon(FontAwesome.Icon.faw_search),
-                        new SecondaryDrawerItem().withName(R.string.drawer_history).withIcon(FontAwesome.Icon.faw_history),
-                        new SecondaryDrawerItem().withName(R.string.drawer_new).withIcon(FontAwesome.Icon.faw_asterisk),
-                        new SecondaryDrawerItem().withName(R.string.drawer_artist).withIcon(FontAwesome.Icon.faw_male),
-                        new SecondaryDrawerItem().withName(R.string.drawer_genre).withIcon(FontAwesome.Icon.faw_music),
+                        new SecondaryDrawerItem().withName(R.string.drawer_search).withIcon(FontAwesome.Icon.faw_search).setEnabled(isConnected),
+                        new SecondaryDrawerItem().withName(R.string.drawer_history).withIcon(FontAwesome.Icon.faw_history).setEnabled(isConnected),
+                        new SecondaryDrawerItem().withName(R.string.drawer_new).withIcon(FontAwesome.Icon.faw_asterisk).setEnabled(isConnected),
+                        new SecondaryDrawerItem().withName(R.string.drawer_artist).withIcon(FontAwesome.Icon.faw_male).setEnabled(isConnected),
+                        new SecondaryDrawerItem().withName(R.string.drawer_genre).withIcon(FontAwesome.Icon.faw_music).setEnabled(isConnected),
                         new SectionDrawerItem().withName(R.string.drawer_other),
-                        new SecondaryDrawerItem().withName(R.string.drawer_setting_pikara).withIcon(FontAwesome.Icon.faw_cog),
+                        new SecondaryDrawerItem().withName(R.string.drawer_setting_pikara).withIcon(FontAwesome.Icon.faw_cog).setEnabled(isConnected),
                         new SecondaryDrawerItem().withName(R.string.drawer_setting_application).withIcon(FontAwesome.Icon.faw_cog),
                         new SecondaryDrawerItem().withName(R.string.drawer_info).withIcon(FontAwesome.Icon.faw_info)
                 ).withSelectedItem(1);
@@ -108,6 +127,15 @@ public class MainActivity extends ActionBarActivity {
               Log.v("PiKaraConsole","makeconnection");
            }
        });
+        drawerResult.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
+                Log.v("PiKaraConsole",String.format("ItemClicked:%d",i));
+                getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, new HomeFragment())//(Fragment)fragmentHashtable.get(i))
+                    .commit();
+            }
+        });
     }
 
     public interface OnMyDrawerListenerInterface extends EventListener {
@@ -155,6 +183,27 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        //handle the back press :D close the drawer first and if the drawer is closed close the activity
+        Log.v("PiKaraConsole",getSupportFragmentManager().getBackStackEntryCount() + "");
+        if (drawerResult != null && drawerResult.isDrawerOpen()) {
+            drawerResult.closeDrawer();
+        } else if(isConnected && getSupportFragmentManager().getBackStackEntryCount() == 0){
+            if(currentFragmentID == 1) {
+                //Confirm Dialog
+            }
+            else{
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, new HomeFragment())//(Fragment)fragmentHashtable.get(i))
+                        .commit();
+            }
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
     /**
